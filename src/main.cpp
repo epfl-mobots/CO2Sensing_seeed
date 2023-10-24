@@ -28,6 +28,7 @@ void parametriseSenors(uint16_t sensingInterval){
 
     //My desk is ~400m above sealevel
     airSensor.setAltitudeCompensation(400); //Set altitude of the sensor in m, stored in non-volatile memory of SCD30
+    delay(200);
     airSensor1.setAltitudeCompensation(400); //Set altitude of the sensor in m, stored in non-volatile memory of SCD30
 }
 
@@ -85,8 +86,7 @@ void setup() {
 }
 
 void loop(){
-    // Take CO2, humidity and temperature measurements every X minutes:
-
+    // Check if any sensor has new data every second
     if(airSensor.dataAvailable()){
         // Sensor 0:
         float data[3]={airSensor.getCO2(), airSensor.getTemperature(), airSensor.getHumidity()};
@@ -103,5 +103,5 @@ void loop(){
         // Send data in the following format: sensor number, co2(ppm),temp(C),humidity(%)
         Serial.println(output);
     }
-    delay(0.75*sensingInterval*1000);
+    delay(1000);
 }
