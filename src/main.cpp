@@ -4,12 +4,14 @@
 #include <Wire.h> // For I2C communication
 #include "SparkFun_SCD30_Arduino_Library.h"
 
+#include "definitions.h"
+
 # define USE_TWO_SENSORS // Comment this line to use only one sensor
 
 SCD30 airSensor;
 SCD30 airSensor1;
 
-uint16_t sensingInterval = 60; // Seconds
+const uint16_t sensingInterval = 60; // Seconds
 
 // Function to parametrise the sensors
 // Parameters: sensingInterval: the interval between measurements in seconds, between 2 and 100 seconds
@@ -27,6 +29,30 @@ void parametriseSenors(uint16_t sensingInterval){
     //My desk is ~400m above sealevel
     airSensor.setAltitudeCompensation(400); //Set altitude of the sensor in m, stored in non-volatile memory of SCD30
     airSensor1.setAltitudeCompensation(400); //Set altitude of the sensor in m, stored in non-volatile memory of SCD30
+}
+
+
+// Function to format the log.
+// Example of formatted log: "[1, 5, 1, {23.2, 53.0, 410}]"
+String format_log(uint8_t sensor_type, uint8_t sensor_nb, uint8_t location, float data[]){
+    String output = "[";
+    output = output + String(sensor_type) + ", ";
+    output = output + String(sensor_nb) + ", ";
+    output = output + String(location) + ", ";
+
+    switch (sensor_type){
+    case SCD30_s:
+        output = output + "{";
+        output = output + String(data[0]) + ", ";
+        output = output + String(data[1]) + ", ";
+        output = output + String(data[2]) + "}";
+        break;
+    
+    default:
+        break;
+    }
+    output = output + "]";
+    return output;
 }
 
 void setup() {
@@ -63,18 +89,16 @@ void loop(){
 
     if(airSensor.dataAvailable()){
         // Sensor 0:
-        String output="0, " + String(airSensor.getCO2())+",";
-        output=output+String(airSensor.getTemperature())+",";
-        output=output+String(airSensor.getHumidity());
+        float data[3]={airSensor.getCO2(), airSensor.getTemperature(), airSensor.getHumidity()};
+        String output = format_log(SCD30_s, 0, INSIDE, data);
         
         // Send data in the following format: sensor number, co2(ppm),temp(C),humidity(%)
         Serial.println(output);
     }
     if(airSensor1.dataAvailable()){
         // Sensor 1:
-        String output="1, " + String(airSensor1.getCO2())+",";
-        output=output+String(airSensor1.getTemperature())+",";
-        output=output+String(airSensor1.getHumidity());
+        float data[3]={airSensor1.getCO2(), airSensor1.getTemperature(), airSensor1.getHumidity()};
+        String output = format_log(SCD30_s, 1, INSIDE, data);
         
         // Send data in the following format: sensor number, co2(ppm),temp(C),humidity(%)
         Serial.println(output);
