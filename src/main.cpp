@@ -4,8 +4,6 @@
 #include <Wire.h> // For I2C communication
 #include "SparkFun_SCD30_Arduino_Library.h"
 
-#include "definitions.h"
-
 # define USE_TWO_SENSORS // Comment this line to use only one sensor
 
 SCD30 airSensor;
@@ -34,24 +32,16 @@ void parametriseSenors(uint16_t sensingInterval){
 
 
 // Function to format the log.
-// Example of formatted log: "[1, 5, 1, {23.2, 53.0, 410}]"
-String format_log(uint8_t sensor_type, uint8_t sensor_nb, uint8_t location, float data[]){
-    String output = "[";
-    output = output + String(sensor_type) + ", ";
+// Example of formatted log: "[1, 5, {23.2, 53.0, 410}]"
+String format_log(uint8_t sensor_nb, float data[]){
+    String output = "[SCD30, ";
     output = output + String(sensor_nb) + ", ";
-    output = output + String(location) + ", ";
 
-    switch (sensor_type){
-    case SCD30_s:
-        output = output + "{";
-        output = output + String(data[0]) + ", ";
-        output = output + String(data[1]) + ", ";
-        output = output + String(data[2]) + "}";
-        break;
-    
-    default:
-        break;
-    }
+    output = output + "{";
+    output = output + String(data[0]) + ", ";
+    output = output + String(data[1]) + ", ";
+    output = output + String(data[2]) + "}";
+
     output = output + "]";
     return output;
 }
@@ -90,7 +80,7 @@ void loop(){
     if(airSensor.dataAvailable()){
         // Sensor 0:
         float data[3]={airSensor.getCO2(), airSensor.getTemperature(), airSensor.getHumidity()};
-        String output = format_log(SCD30_s, 0, INSIDE, data);
+        String output = format_log(0, data);
         
         // Send data in the following format: sensor number, co2(ppm),temp(C),humidity(%)
         Serial.println(output);
@@ -98,7 +88,7 @@ void loop(){
     if(airSensor1.dataAvailable()){
         // Sensor 1:
         float data[3]={airSensor1.getCO2(), airSensor1.getTemperature(), airSensor1.getHumidity()};
-        String output = format_log(SCD30_s, 1, INSIDE, data);
+        String output = format_log(1, data);
         
         // Send data in the following format: sensor number, co2(ppm),temp(C),humidity(%)
         Serial.println(output);
