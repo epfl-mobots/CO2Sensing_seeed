@@ -7,7 +7,9 @@
 # define USE_TWO_SENSORS // Comment this line to use only one sensor
 
 SCD30 airSensor;
+#ifdef USE_TWO_SENSORS
 SCD30 airSensor1;
+#endif
 
 const uint16_t sensingInterval = 60; // Seconds
 
@@ -15,8 +17,10 @@ const uint16_t sensingInterval = 60; // Seconds
 // Parameters: sensingInterval: the interval between measurements in seconds, between 2 and 100 seconds
 void parametriseSenors(uint16_t sensingInterval){
     airSensor.setMeasurementInterval(sensingInterval); //Change number of seconds between measurements: 2 to 1800 (30 minutes), stored in non-volatile memory of SCD30
+    #ifdef USE_TWO_SENSORS
     airSensor1.setMeasurementInterval(sensingInterval); //Change number of seconds between measurements: 2 to 1800 (30 minutes), stored in non-volatile memory of SCD30
-
+    #endif
+     
     //While the setting is recorded, it is not immediately available to be read.
     delay(200);
     int interval = airSensor.getMeasurementInterval();

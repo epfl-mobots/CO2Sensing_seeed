@@ -146,7 +146,7 @@ static const uint8_t SCK  = PIN_SPI_SCK ;
 /*
  * Wire Interfaces
  */
-#define WIRE_INTERFACES_COUNT 2
+#define WIRE_INTERFACES_COUNT 2 // The number of desired I2C interfaces 
 
   // "external" public i2c interface
 #define PIN_WIRE_SDA         (4u)
